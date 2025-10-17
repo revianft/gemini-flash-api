@@ -8,11 +8,15 @@ import { GoogleGenAI } from "@google/genai";
 // ===== App & SDK setup =====
 const app = express();
 // Accept GEMINI_API_KEY, GOOGLE_API_KEY or API_KEY
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey)
+const apiKey =
+  process.env.GEMINI_API_KEY ||
+  process.env.GOOGLE_API_KEY ||
+  process.env.API_KEY;
+if (!apiKey) {
   throw new Error(
-    "Missing GEMINI_API_KEY or GOOGLE_API_KEY or API_KEY in .env"
+    "Missing GEMINI_API_KEY, GOOGLE_API_KEY, or API_KEY in environment"
   );
+}
 
 const ai = new GoogleGenAI({ apiKey });
 const MODEL = process.env.MODEL || "gemini-2.5-flash";
@@ -58,13 +62,15 @@ app.get("/health", (req, res) => {
 app.post("/generate-text", async (req, res) => {
   try {
     const { prompt } = req.body || {};
-    if (!prompt || typeof prompt !== "string") {
+    const promptText =
+      typeof prompt === "string" && prompt.trim() ? prompt.trim() : "";
+    if (!promptText) {
       return res.status(400).json({ message: "'prompt' is required (string)" });
     }
 
     const response = await ai.models.generateContent({
       model: MODEL,
-      contents: prompt,
+      contents: [promptText],
     });
 
     const text = response?.text ?? response?.output ?? "";
@@ -82,8 +88,6 @@ app.post("/generate-image", upload.single("image"), async (req, res) => {
   try {
     const { prompt } = req.body || {};
     const file = req.file;
-    if (!prompt)
-      return res.status(400).json({ message: "'prompt' is required" });
     if (!file)
       return res.status(400).json({ message: "'image' file is required" });
 
@@ -94,12 +98,16 @@ app.post("/generate-image", upload.single("image"), async (req, res) => {
         .json({ message: `Unsupported image type: ${file.mimetype}` });
     }
 
+    const promptText =
+      typeof prompt === "string" && prompt.trim() ? prompt.trim() : "";
+    const contents = [
+      ...(promptText ? [promptText] : []),
+      { inlineData: { data: toB64(file.buffer), mimeType: file.mimetype } },
+    ];
+
     const response = await ai.models.generateContent({
       model: MODEL,
-      contents: [
-        prompt,
-        { inlineData: { data: toB64(file.buffer), mimeType: file.mimetype } },
-      ],
+      contents,
     });
 
     const text = response?.text ?? response?.output ?? "";
@@ -120,16 +128,29 @@ app.post(
     try {
       const { prompt } = req.body || {};
       const file = req.file;
-      if (!prompt)
-        return res.status(400).json({ message: "Prompt is required." });
       if (!file)
         return res.status(400).json({ message: "Document file is required." });
 
+      const allowedDocs = [
+        "application/pdf",
+        "text/plain",
+        "text/markdown",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+      if (!allowedDocs.includes(file.mimetype)) {
+        return res.status(415).json({
+          message: `Unsupported document type: ${file.mimetype}`,
+        });
+      }
+
+      const promptText =
+        typeof prompt === "string" && prompt.trim() ? prompt.trim() : "";
       const base64 = toB64(file.buffer);
       const response = await ai.models.generateContent({
         model: MODEL,
         contents: [
-          prompt,
+          ...(promptText ? [promptText] : []),
           { inlineData: { data: base64, mimeType: file.mimetype } },
         ],
       });
@@ -150,16 +171,30 @@ app.post("/generate-from-audio", upload.single("audio"), async (req, res) => {
   try {
     const { prompt } = req.body || {};
     const file = req.file;
-    if (!prompt)
-      return res.status(400).json({ message: "Prompt is required." });
     if (!file)
       return res.status(400).json({ message: "Audio file is required." });
 
+    const allowedAudio = [
+      "audio/webm",
+      "audio/wav",
+      "audio/mpeg",
+      "audio/mp4",
+      "audio/ogg",
+      "audio/opus",
+    ];
+    if (!allowedAudio.includes(file.mimetype)) {
+      return res.status(415).json({
+        message: `Unsupported audio type: ${file.mimetype}`,
+      });
+    }
+
+    const promptText =
+      typeof prompt === "string" && prompt.trim() ? prompt.trim() : "";
     const base64 = toB64(file.buffer);
     const response = await ai.models.generateContent({
       model: MODEL,
       contents: [
-        prompt,
+        ...(promptText ? [promptText] : []),
         { inlineData: { data: base64, mimeType: file.mimetype } },
       ],
     });

@@ -451,7 +451,12 @@
               accept="application/pdf,.txt,.md,.doc,.docx"
               class="hidden"
             />
-            <input id="fileImage" type="file" accept="image/*" class="hidden" />
+            <input
+              id="fileImage"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              class="hidden"
+            />
           </form>
 
           <!-- Status Chips -->
@@ -491,9 +496,66 @@
       const API_BASE = window.location.origin;
       const chatEl = document.getElementById("chat");
       const modelNameEl = document.getElementById("modelName");
+      const composerForm = document.getElementById("composer");
+      const ta = document.getElementById("prompt");
+      const fileDoc = document.getElementById("fileDoc");
+      const fileImage = document.getElementById("fileImage");
+      const btnDoc = document.getElementById("btnDoc");
+      const btnImage = document.getElementById("btnImage");
+      const btnMic = document.getElementById("btnMic");
+      const recChip = document.getElementById("recChip");
+      const attachChip = document.getElementById("attachChip");
+      const sendButtons = [
+        ...composerForm.querySelectorAll('button[type="submit"]'),
+      ];
+      const actionButtons = [
+        ...composerForm.querySelectorAll('button[type="button"]'),
+      ];
+      const disableTargets = [
+        ta,
+        ...sendButtons,
+        ...actionButtons,
+        fileDoc,
+        fileImage,
+      ].filter(Boolean);
+
+      const escapeHtml = (value) =>
+        String(value ?? "").replace(/[&<>"']/g, (ch) => {
+          const map = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          };
+          return map[ch] || ch;
+        });
+
+      const formatMessage = (raw) => {
+        let safe = escapeHtml(raw);
+        safe = safe.replace(
+          /\*\*(.*?)\*\*/g,
+          "<strong class='font-semibold'>$1</strong>"
+        );
+        safe = safe.replace(
+          /\`(.*?)\`/g,
+          "<code class='glass px-2 py-1 rounded text-xs font-mono text-purple-200'>$1</code>"
+        );
+        return safe.replace(/\n/g, "<br>");
+      };
+
+      const setComposerBusy = (isBusy) => {
+        disableTargets.forEach((el) => {
+          if (!el) return;
+          if (isBusy) {
+            el.setAttribute("disabled", "disabled");
+          } else {
+            el.removeAttribute("disabled");
+          }
+        });
+      };
 
       // Auto-size textarea
-      const ta = document.getElementById("prompt");
       ta.addEventListener("input", () => {
         ta.style.height = "auto";
         ta.style.height = Math.min(160, ta.scrollHeight) + "px";
@@ -516,17 +578,7 @@
             ? "rounded-br-md gradient-bg text-white neon-glow"
             : "rounded-bl-md glass-strong text-white border border-white/20");
 
-        // Markdown processing
-        let processedText = text.replace(
-          /\*\*(.*?)\*\*/g,
-          "<strong class='font-semibold'>$1</strong>"
-        );
-        processedText = processedText.replace(
-          /\`(.*?)\`/g,
-          "<code class='glass px-2 py-1 rounded text-xs font-mono text-purple-200'>$1</code>"
-        );
-        processedText = processedText.replace(/\n/g, "<br>");
-
+        const processedText = formatMessage(text);
         b.innerHTML = processedText;
         wrap.appendChild(b);
         chatEl.appendChild(wrap);
@@ -542,13 +594,6 @@
         .catch(() => {});
 
       // File handling
-      const fileDoc = document.getElementById("fileDoc");
-      const fileImage = document.getElementById("fileImage");
-      const btnDoc = document.getElementById("btnDoc");
-      const btnImage = document.getElementById("btnImage");
-      const btnMic = document.getElementById("btnMic");
-      const recChip = document.getElementById("recChip");
-      const attachChip = document.getElementById("attachChip");
       let recorder,
         chunks = [],
         recording = false;
@@ -601,80 +646,93 @@
       };
 
       // Submit handler
-      document
-        .getElementById("composer")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const text = ta.value.trim();
-          const hasDoc = fileDoc.files.length > 0;
-          const hasImg = fileImage.files.length > 0;
-          const hasMicBlob = chunks.length > 0;
+      composerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = ta.value.trim();
+        const hasDoc = fileDoc.files.length > 0;
+        const hasImg = fileImage.files.length > 0;
+        const hasMicBlob = chunks.length > 0;
 
-          if (!text && !hasDoc && !hasImg && !hasMicBlob) return;
+        if (!text && !hasDoc && !hasImg && !hasMicBlob) return;
 
-          const summary = [
-            text,
-            hasImg ? "[+image]" : "",
-            hasDoc ? "[+doc]" : "",
-            hasMicBlob ? "[+audio]" : "",
-          ]
-            .filter(Boolean)
-            .join(" ");
+        const summary = [
+          text,
+          hasImg ? "[+image]" : "",
+          hasDoc ? "[+doc]" : "",
+          hasMicBlob ? "[+audio]" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
 
-          bubble("user", summary || "[attachment only]");
+        bubble("user", summary || "[attachment only]");
+        setComposerBusy(true);
 
-          try {
-            let res, data;
-            if (hasImg) {
-              const fd = new FormData();
-              if (text) fd.append("prompt", text);
-              fd.append("image", fileImage.files[0]);
-              res = await fetch(API_BASE + "/generate-image", {
-                method: "POST",
-                body: fd,
-              });
-              data = await res.json();
-            } else if (hasDoc) {
-              const fd = new FormData();
-              if (text) fd.append("prompt", text);
-              fd.append("document", fileDoc.files[0]);
-              res = await fetch(API_BASE + "/generate-from-document", {
-                method: "POST",
-                body: fd,
-              });
-              data = await res.json();
-            } else if (hasMicBlob) {
-              const fd = new FormData();
-              if (text) fd.append("prompt", text);
-              const blob = new Blob(chunks, { type: "audio/webm" });
-              fd.append("audio", blob, "recording.webm");
-              chunks = [];
-              res = await fetch(API_BASE + "/generate-from-audio", {
-                method: "POST",
-                body: fd,
-              });
-              data = await res.json();
-            } else {
-              res = await fetch(API_BASE + "/generate-text", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: text }),
-              });
-              data = await res.json();
-            }
-
-            if (!res.ok) throw new Error(data?.message || "Request failed");
-            bubble("assistant", data.result || "[no result]");
-          } catch (err) {
-            bubble("assistant", "❌ " + (err.message || err));
-          } finally {
-            ta.value = "";
-            ta.style.height = "auto";
-            fileDoc.value = "";
-            fileImage.value = "";
-            attachChip.classList.add("hidden");
+        try {
+          let res, data;
+          if (hasImg) {
+            const fd = new FormData();
+            if (text) fd.append("prompt", text);
+            fd.append("image", fileImage.files[0]);
+            res = await fetch(API_BASE + "/generate-image", {
+              method: "POST",
+              body: fd,
+            });
+            data = await res.json();
+          } else if (hasDoc) {
+            const fd = new FormData();
+            if (text) fd.append("prompt", text);
+            fd.append("document", fileDoc.files[0]);
+            res = await fetch(API_BASE + "/generate-from-document", {
+              method: "POST",
+              body: fd,
+            });
+            data = await res.json();
+          } else if (hasMicBlob) {
+            const fd = new FormData();
+            if (text) fd.append("prompt", text);
+            const blob = new Blob(chunks, { type: "audio/webm" });
+            fd.append("audio", blob, "recording.webm");
+            chunks = [];
+            res = await fetch(API_BASE + "/generate-from-audio", {
+              method: "POST",
+              body: fd,
+            });
+            data = await res.json();
+          } else {
+            res = await fetch(API_BASE + "/generate-text", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ prompt: text }),
+            });
+            data = await res.json();
           }
-        });
+
+          if (!res.ok) {
+            let message = data?.message || "Request failed";
+            if (res.status === 400) {
+              message =
+                data?.message ||
+                "Permintaan tidak valid. Tambahkan teks atau coba lagi.";
+            } else if (res.status === 415) {
+              message =
+                data?.message ||
+                "Jenis file tidak didukung. Coba format lain yang kompatibel.";
+            }
+            throw new Error(message);
+          }
+          bubble("assistant", data.result || "[no result]");
+        } catch (err) {
+          bubble("assistant", "❌ " + (err.message || err));
+        } finally {
+          ta.value = "";
+          ta.style.height = "auto";
+          fileDoc.value = "";
+          fileImage.value = "";
+          attachChip.textContent = "";
+          attachChip.classList.add("hidden");
+          setComposerBusy(false);
+        }
+      });
     </script>
   </body>
 </html>
