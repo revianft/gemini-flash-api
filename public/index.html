@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gemini Chat</title>
+    <title>Ai Bestie</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
@@ -287,7 +287,9 @@
           </div>
 
           <div>
-            <h1 class="text-lg font-bold text-white neon-text">Gemini Flash</h1>
+            <h1 class="text-lg font-bold text-white neon-text">
+              Your AI Bestie
+            </h1>
             <div class="flex items-center gap-2">
               <div
                 class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"
@@ -518,6 +520,8 @@
         fileDoc,
         fileImage,
       ].filter(Boolean);
+      const conversation = [];
+      const SYSTEM_PROMPT = "Balas singkat, jelas, dan helpful.";
 
       const escapeHtml = (value) =>
         String(value ?? "").replace(/[&<>"']/g, (ch) => {
@@ -703,6 +707,9 @@
 
         try {
           let res, data;
+          let assistantMessage = "";
+          let userTurnAdded = false;
+          let usedChatEndpoint = false;
           if (hasImg) {
             const fd = new FormData();
             if (text) fd.append("prompt", text);
@@ -733,10 +740,17 @@
             });
             data = await res.json();
           } else {
-            res = await fetch(API_BASE + "/generate-text", {
+            usedChatEndpoint = true;
+            conversation.push({ role: "user", text });
+            userTurnAdded = true;
+            const payload = {
+              conversation,
+              instruction: SYSTEM_PROMPT,
+            };
+            res = await fetch(API_BASE + "/api/chat", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ prompt: text }),
+              body: JSON.stringify(payload),
             });
             data = await res.json();
           }
@@ -755,9 +769,17 @@
             throw new Error(message);
           }
           hideThinkingBubble();
-          bubble("assistant", data.result || "[no result]");
+          assistantMessage = data.result || "[no result]";
+          if (usedChatEndpoint) {
+            conversation.push({ role: "model", text: assistantMessage });
+          }
+          bubble("assistant", assistantMessage);
         } catch (err) {
           hideThinkingBubble();
+          const last = conversation[conversation.length - 1];
+          if (last && last.role === "user") {
+            conversation.pop();
+          }
           bubble("assistant", "❌ " + (err.message || err));
         } finally {
           hideThinkingBubble();
