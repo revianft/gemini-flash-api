@@ -8,14 +8,9 @@ import { GoogleGenAI } from "@google/genai";
 // ===== App & SDK setup =====
 const app = express();
 // Accept GEMINI_API_KEY, GOOGLE_API_KEY or API_KEY
-const apiKey =
-  process.env.GEMINI_API_KEY ||
-  process.env.GOOGLE_API_KEY ||
-  process.env.API_KEY;
+const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
-  throw new Error(
-    "Missing GEMINI_API_KEY, GOOGLE_API_KEY, or API_KEY in environment"
-  );
+  throw new Error("Missing GEMINI_API_KEY in environment");
 }
 
 const ai = new GoogleGenAI({ apiKey });

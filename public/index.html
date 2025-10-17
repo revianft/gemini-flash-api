@@ -561,6 +561,8 @@
         ta.style.height = Math.min(160, ta.scrollHeight) + "px";
       });
 
+      let thinkingBubble = null;
+
       // Enhanced bubble function
       function bubble(role, text) {
         if (placeholder) placeholder.classList.add("hidden");
@@ -583,6 +585,37 @@
         wrap.appendChild(b);
         chatEl.appendChild(wrap);
         chatEl.scrollTop = chatEl.scrollHeight;
+      }
+
+      function showThinkingBubble() {
+        if (thinkingBubble) return;
+        if (placeholder) placeholder.classList.add("hidden");
+
+        const wrap = document.createElement("div");
+        wrap.className = "w-full flex justify-start message-bubble";
+        const b = document.createElement("div");
+        b.className =
+          "max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm rounded-bl-md glass-strong text-white border border-white/20";
+        b.innerHTML = `
+          <span class="inline-flex items-center gap-2">
+            <span class="flex gap-1">
+              <span class="block w-2 h-2 bg-purple-300 rounded-full typing-dot"></span>
+              <span class="block w-2 h-2 bg-purple-300 rounded-full typing-dot"></span>
+              <span class="block w-2 h-2 bg-purple-300 rounded-full typing-dot"></span>
+            </span>
+            <span class="text-xs text-purple-200">Sedang berpikir...</span>
+          </span>
+        `;
+        wrap.appendChild(b);
+        chatEl.appendChild(wrap);
+        chatEl.scrollTop = chatEl.scrollHeight;
+        thinkingBubble = wrap;
+      }
+
+      function hideThinkingBubble() {
+        if (!thinkingBubble) return;
+        chatEl.removeChild(thinkingBubble);
+        thinkingBubble = null;
       }
 
       // Health check
@@ -666,6 +699,7 @@
 
         bubble("user", summary || "[attachment only]");
         setComposerBusy(true);
+        showThinkingBubble();
 
         try {
           let res, data;
@@ -720,10 +754,13 @@
             }
             throw new Error(message);
           }
+          hideThinkingBubble();
           bubble("assistant", data.result || "[no result]");
         } catch (err) {
+          hideThinkingBubble();
           bubble("assistant", "❌ " + (err.message || err));
         } finally {
+          hideThinkingBubble();
           ta.value = "";
           ta.style.height = "auto";
           fileDoc.value = "";
