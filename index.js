@@ -1,96 +1,180 @@
 import "dotenv/config";
 import express from "express";
 import multer from "multer";
-import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 import { GoogleGenAI } from "@google/genai";
 
+// ===== App & SDK setup =====
 const app = express();
-const upload = multer();
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Accept GEMINI_API_KEY, GOOGLE_API_KEY or API_KEY
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey)
+  throw new Error(
+    "Missing GEMINI_API_KEY or GOOGLE_API_KEY or API_KEY in .env"
+  );
 
-const GEMINI_MODEL = "gemini-2.5-flash";
+const ai = new GoogleGenAI({ apiKey });
+const MODEL = process.env.MODEL || "gemini-2.5-flash";
 
-app.use(express.json());
+// ===== Parsers & static files =====
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true }));
 
-//GET ENDPOINT TEXT GENERATION
-app.get("/generate-text", async (req, res) => {
-  const { prompt } = req.body;
+// Simple request logger to help debugging origin/route issues
+app.use((req, res, next) => {
+  console.log(
+    new Date().toISOString(),
+    req.method,
+    req.originalUrl,
+    "host=",
+    req.headers.host,
+    "content-type=",
+    req.headers["content-type"]
+  );
+  next();
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/public", express.static(path.join(__dirname, "public"))); // keep your current URL working
+
+// Multer (in-memory) for uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+});
+
+// helper to base64 inline data
+const toB64 = (buf) => Buffer.from(buf).toString("base64");
+
+// ===== Health check =====
+app.get("/health", (req, res) => {
+  res.json({ ok: true, model: MODEL });
+});
+
+// ===== TEXT: POST /generate-text =====
+app.post("/generate-text", async (req, res) => {
   try {
-    const response = await ai.generateText({
-      model: GEMINI_MODEL,
-      content: prompt,
+    const { prompt } = req.body || {};
+    if (!prompt || typeof prompt !== "string") {
+      return res.status(400).json({ message: "'prompt' is required (string)" });
+    }
+
+    const response = await ai.models.generateContent({
+      model: MODEL,
+      contents: prompt,
     });
 
-    res.status(200).json({ result: response.text });
+    const text = response?.text ?? response?.output ?? "";
+    return res.status(200).json({ result: text });
   } catch (error) {
-    console.error("Error generating text:", error);
-    res.status(500).json({ message: error.message });
+    console.error("/generate-text error:", error);
+    return res
+      .status(500)
+      .json({ message: error?.message || "Internal error" });
   }
 });
 
-//POST ENDPOINT IMAGE GENERATION
+// ===== VISION: POST /generate-image (prompt + image) =====
 app.post("/generate-image", upload.single("image"), async (req, res) => {
-  const { prompt } = req.body;
   try {
+    const { prompt } = req.body || {};
+    const file = req.file;
+    if (!prompt)
+      return res.status(400).json({ message: "'prompt' is required" });
+    if (!file)
+      return res.status(400).json({ message: "'image' file is required" });
+
+    const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+    if (!allowed.includes(file.mimetype)) {
+      return res
+        .status(415)
+        .json({ message: `Unsupported image type: ${file.mimetype}` });
+    }
+
     const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
+      model: MODEL,
       contents: [
-        { text: prompt, type: "text" },
-        { inlineData: { data: base64Image, mimeType: req.file.mimetype } },
+        prompt,
+        { inlineData: { data: toB64(file.buffer), mimeType: file.mimetype } },
       ],
     });
 
-    res.status(200).json({ result: response.text });
+    const text = response?.text ?? response?.output ?? "";
+    return res.status(200).json({ result: text });
   } catch (error) {
-    console.error("Error generating image:", error);
-    res.status(500).json({ message: error.message });
+    console.error("/generate-image error:", error);
+    return res
+      .status(500)
+      .json({ message: error?.message || "Internal error" });
   }
 });
 
-//POST ENDPOINT GENERATE FROM DOCUMENT
+// ===== DOCUMENT: POST /generate-from-document (prompt + document) =====
 app.post(
   "/generate-from-document",
   upload.single("document"),
   async (req, res) => {
-    const { prompt } = req.body;
-    const base64document = req.file.buffer.toString("base64");
     try {
+      const { prompt } = req.body || {};
+      const file = req.file;
+      if (!prompt)
+        return res.status(400).json({ message: "Prompt is required." });
+      if (!file)
+        return res.status(400).json({ message: "Document file is required." });
+
+      const base64 = toB64(file.buffer);
       const response = await ai.models.generateContent({
-        model: GEMINI_MODEL,
+        model: MODEL,
         contents: [
-          { text: prompt, type: "text" },
-          { inlineData: { data: base64document, mimeType: req.file.mimetype } },
+          prompt,
+          { inlineData: { data: base64, mimeType: file.mimetype } },
         ],
       });
 
-      res.status(200).json({ result: response.text });
+      const text = response?.text ?? response?.output ?? "";
+      return res.status(200).json({ result: text });
     } catch (error) {
-      console.error("Error generating from document:", error);
-      res.status(500).json({ message: error.message });
+      console.error("/generate-from-document error:", error);
+      return res
+        .status(500)
+        .json({ message: error?.message || "Internal error" });
     }
   }
 );
 
-//POST ENDPOINT GENERATE FROM AUDIO
+// ===== AUDIO: POST /generate-from-audio (prompt + audio) =====
 app.post("/generate-from-audio", upload.single("audio"), async (req, res) => {
-  const { prompt } = req.body;
-  const base64audio = req.file.buffer.toString("base64");
   try {
+    const { prompt } = req.body || {};
+    const file = req.file;
+    if (!prompt)
+      return res.status(400).json({ message: "Prompt is required." });
+    if (!file)
+      return res.status(400).json({ message: "Audio file is required." });
+
+    const base64 = toB64(file.buffer);
     const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
+      model: MODEL,
       contents: [
-        { text: prompt, type: "text" },
-        { inlineData: { data: base64audio, mimeType: req.file.mimetype } },
+        prompt,
+        { inlineData: { data: base64, mimeType: file.mimetype } },
       ],
     });
 
-    res.status(200).json({ result: response.text });
+    const text = response?.text ?? response?.output ?? "";
+    return res.status(200).json({ result: text });
   } catch (error) {
-    console.error("Error generating from audio:", error);
-    res.status(500).json({ message: error.message });
+    console.error("/generate-from-audio error:", error);
+    return res
+      .status(500)
+      .json({ message: error?.message || "Internal error" });
   }
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server ready on http://localhost:3000`));
+app.listen(PORT, () => {
+  console.log(`Server ready on http://localhost:${PORT}`);
+});

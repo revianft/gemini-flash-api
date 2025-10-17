@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gemini Flash Tester</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      .animate-gradient {
+        background-size: 200% 200%;
+        animation: gradient 8s ease infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+      .glassmorphism {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .spinner {
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen"
+  >
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"
+      ></div>
+      <div
+        class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"
+        style="animation-delay: 2s"
+      ></div>
+      <div
+        class="absolute top-1/2 left-1/2 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"
+        style="animation-delay: 4s"
+      ></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <header class="mb-8 sm:mb-12 text-center">
+        <h1
+          class="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3"
+        >
+          Gemini Flash Tester
+        </h1>
+      </header>
+
+      <div class="mb-6 flex flex-wrap justify-center gap-2 sm:gap-3">
+        <button
+          data-tab="text"
+          class="tab-btn group relative px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+        >
+          <span class="relative z-10 flex items-center gap-2">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              ></path>
+            </svg>
+            Text
+          </span>
+        </button>
+        <button
+          data-tab="image"
+          class="tab-btn group relative px-6 py-3 rounded-2xl bg-white text-slate-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+        >
+          <span class="relative z-10 flex items-center gap-2">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path>
+            </svg>
+            Image
+          </span>
+        </button>
+        <button
+          data-tab="document"
+          class="tab-btn group relative px-6 py-3 rounded-2xl bg-white text-slate-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+        >
+          <span class="relative z-10 flex items-center gap-2">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+            Document
+          </span>
+        </button>
+        <button
+          data-tab="audio"
+          class="tab-btn group relative px-6 py-3 rounded-2xl bg-white text-slate-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+        >
+          <span class="relative z-10 flex items-center gap-2">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+              ></path>
+            </svg>
+            Audio
+          </span>
+        </button>
+      </div>
+
+      <main class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        <section class="space-y-6">
+          <div
+            id="panel-text"
+            class="panel glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg"
+              >
+                <svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="font-bold text-xl text-slate-800">
+                  Text Generation
+                </h2>
+                <p class="text-sm text-slate-500">POST /generate-text</p>
+              </div>
+            </div>
+            <form id="form-text" class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Your Prompt</label
+                >
+                <textarea
+                  name="prompt"
+                  rows="5"
+                  placeholder="Type your prompt here..."
+                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
+                ></textarea>
+              </div>
+              <div class="flex items-center gap-3">
+                <button
+                  type="submit"
+                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  Send Message
+                </button>
+                <span
+                  id="spinner-text"
+                  class="hidden flex items-center gap-2 text-sm text-slate-600"
+                >
+                  <div class="spinner"></div>
+                  <span>Processing...</span>
+                </span>
+              </div>
+            </form>
+          </div>
+
+          <div
+            id="panel-image"
+            class="panel hidden glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg"
+              >
+                <svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="font-bold text-xl text-slate-800">Image Vision</h2>
+                <p class="text-sm text-slate-500">POST /generate-image</p>
+              </div>
+            </div>
+            <form
+              id="form-image"
+              class="space-y-4"
+              enctype="multipart/form-data"
+            >
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Prompt</label
+                >
+                <input
+                  type="text"
+                  name="prompt"
+                  placeholder="Describe what you want to analyze from the image"
+                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Upload Image</label
+                >
+                <div class="relative">
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    class="block w-full text-sm text-slate-700 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-purple-500 file:to-purple-600 file:text-white hover:file:from-purple-600 hover:file:to-purple-700 file:cursor-pointer file:transition-all file:duration-300"
+                  />
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button
+                  type="submit"
+                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold hover:from-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  Analyze Image
+                </button>
+                <span
+                  id="spinner-image"
+                  class="hidden flex items-center gap-2 text-sm text-slate-600"
+                >
+                  <div class="spinner"></div>
+                  <span>Processing...</span>
+                </span>
+              </div>
+            </form>
+          </div>
+
+          <div
+            id="panel-document"
+            class="panel hidden glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl shadow-lg"
+              >
+                <svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="font-bold text-xl text-slate-800">
+                  Document Analysis
+                </h2>
+                <p class="text-sm text-slate-500">
+                  POST /generate-from-document
+                </p>
+              </div>
+            </div>
+            <form
+              id="form-document"
+              class="space-y-4"
+              enctype="multipart/form-data"
+            >
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Prompt</label
+                >
+                <input
+                  type="text"
+                  name="prompt"
+                  placeholder="Questions or instructions about the document"
+                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Upload Document</label
+                >
+                <input
+                  type="file"
+                  name="document"
+                  accept="application/pdf,.txt,.md,.doc,.docx"
+                  class="block w-full text-sm text-slate-700 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-indigo-500 file:to-indigo-600 file:text-white hover:file:from-indigo-600 hover:file:to-indigo-700 file:cursor-pointer file:transition-all file:duration-300"
+                />
+              </div>
+              <div class="flex items-center gap-3">
+                <button
+                  type="submit"
+                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold hover:from-indigo-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  Process Document
+                </button>
+                <span
+                  id="spinner-document"
+                  class="hidden flex items-center gap-2 text-sm text-slate-600"
+                >
+                  <div class="spinner"></div>
+                  <span>Processing...</span>
+                </span>
+              </div>
+            </form>
+          </div>
+
+          <div
+            id="panel-audio"
+            class="panel hidden glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="p-3 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-lg"
+              >
+                <svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="font-bold text-xl text-slate-800">
+                  Audio Processing
+                </h2>
+                <p class="text-sm text-slate-500">POST /generate-from-audio</p>
+              </div>
+            </div>
+            <form
+              id="form-audio"
+              class="space-y-4"
+              enctype="multipart/form-data"
+            >
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Prompt</label
+                >
+                <input
+                  type="text"
+                  name="prompt"
+                  placeholder="Instructions or questions about the audio"
+                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Upload Audio</label
+                >
+                <input
+                  type="file"
+                  name="audio"
+                  accept="audio/*"
+                  class="block w-full text-sm text-slate-700 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-pink-500 file:to-pink-600 file:text-white hover:file:from-pink-600 hover:file:to-pink-700 file:cursor-pointer file:transition-all file:duration-300"
+                />
+              </div>
+              <div class="flex items-center gap-3">
+                <button
+                  type="submit"
+                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-pink-600 text-white font-semibold hover:from-pink-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  Process Audio
+                </button>
+                <span
+                  id="spinner-audio"
+                  class="hidden flex items-center gap-2 text-sm text-slate-600"
+                >
+                  <div class="spinner"></div>
+                  <span>Processing...</span>
+                </span>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <aside
+          class="glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 flex flex-col h-[600px] lg:h-auto"
+        >
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="p-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl"
+            >
+              <svg
+                class="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="font-bold text-xl text-slate-800">Conversation</h2>
+          </div>
+          <div
+            id="log"
+            class="flex-1 overflow-y-auto space-y-3 p-4 bg-white/50 rounded-2xl border-2 border-slate-200/50 backdrop-blur-sm"
+          ></div>
+        </aside>
+      </main>
+
+      <footer class="mt-12 text-center text-sm text-slate-500">
+        <p>Built with ❤️ using Tailwind CSS and Gemini AI</p>
+      </footer>
+    </div>
+
+    <script>
+      const tabs = document.querySelectorAll(".tab-btn");
+      const panels = {
+        text: document.getElementById("panel-text"),
+        image: document.getElementById("panel-image"),
+        document: document.getElementById("panel-document"),
+        audio: document.getElementById("panel-audio"),
+      };
+
+      tabs.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = btn.getAttribute("data-tab");
+          tabs.forEach((b) => {
+            b.classList.remove(
+              "bg-gradient-to-r",
+              "from-blue-500",
+              "to-blue-600",
+              "text-white"
+            );
+            b.classList.add("bg-white", "text-slate-700");
+          });
+          btn.classList.remove("bg-white", "text-slate-700");
+          btn.classList.add(
+            "bg-gradient-to-r",
+            "from-blue-500",
+            "to-blue-600",
+            "text-white"
+          );
+          Object.values(panels).forEach((p) => p.classList.add("hidden"));
+          panels[target].classList.remove("hidden");
+        });
+      });
+
+      const logEl = document.getElementById("log");
+      const API_BASE = window.location.origin;
+
+      function appendLog(role, text) {
+        const wrap = document.createElement("div");
+        wrap.className =
+          "p-4 rounded-2xl transform transition-all duration-300 hover:scale-[1.02] " +
+          (role === "user"
+            ? "bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 shadow-sm"
+            : "bg-gradient-to-r from-emerald-50 to-emerald-100 border-2 border-emerald-200 shadow-sm");
+        const who = document.createElement("div");
+        who.className =
+          "flex items-center gap-2 text-xs font-bold text-slate-700 mb-2";
+        const icon = document.createElement("span");
+        icon.textContent = role === "user" ? "👤" : "🤖";
+        const name = document.createElement("span");
+        name.textContent = role === "user" ? "You" : "Gemini";
+        who.appendChild(icon);
+        who.appendChild(name);
+        const pre = document.createElement("pre");
+        pre.className =
+          "whitespace-pre-wrap text-sm text-slate-800 leading-relaxed";
+        pre.textContent = text || "";
+        wrap.appendChild(who);
+        wrap.appendChild(pre);
+        logEl.appendChild(wrap);
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      document
+        .getElementById("form-text")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const form = e.currentTarget;
+          const spinner = document.getElementById("spinner-text");
+          const prompt = form.prompt.value.trim();
+          if (!prompt) return;
+          appendLog("user", prompt);
+
+          spinner.classList.remove("hidden");
+          try {
+            const res = await fetch(`${API_BASE}/generate-text`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ prompt }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.message || "Request failed");
+            appendLog("assistant", data.result || "[no result]");
+          } catch (err) {
+            appendLog("assistant", "❌ " + (err.message || err));
+          } finally {
+            spinner.classList.add("hidden");
+            form.reset();
+          }
+        });
+
+      document
+        .getElementById("form-image")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const form = e.currentTarget;
+          const spinner = document.getElementById("spinner-image");
+          const fd = new FormData(form);
+          const prompt = (fd.get("prompt") || "").toString().trim();
+          const file = fd.get("image");
+          if (!prompt) return alert("Isi prompt dulu.");
+          if (!file || !file.size) return alert("Pilih file image.");
+          appendLog("user", `[VISION]\n${prompt}\n(file: ${file.name})`);
+
+          spinner.classList.remove("hidden");
+          try {
+            const res = await fetch(`${API_BASE}/generate-image`, {
+              method: "POST",
+              body: fd,
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.message || "Request failed");
+            appendLog("assistant", data.result || "[no result]");
+          } catch (err) {
+            appendLog("assistant", "❌ " + (err.message || err));
+          } finally {
+            spinner.classList.add("hidden");
+            form.reset();
+          }
+        });
+
+      document
+        .getElementById("form-document")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const form = e.currentTarget;
+          const spinner = document.getElementById("spinner-document");
+          const fd = new FormData(form);
+          const prompt = (fd.get("prompt") || "").toString().trim();
+          const file = fd.get("document");
+          if (!prompt) return alert("Isi prompt dulu.");
+          if (!file || !file.size) return alert("Pilih dokumen.");
+          appendLog("user", `[DOCUMENT]\n${prompt}\n(file: ${file.name})`);
+
+          spinner.classList.remove("hidden");
+          try {
+            const res = await fetch(`${API_BASE}/generate-from-document`, {
+              method: "POST",
+              body: fd,
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.message || "Request failed");
+            appendLog("assistant", data.result || "[no result]");
+          } catch (err) {
+            appendLog("assistant", "❌ " + (err.message || err));
+          } finally {
+            spinner.classList.add("hidden");
+            form.reset();
+          }
+        });
+
+      document
+        .getElementById("form-audio")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const form = e.currentTarget;
+          const spinner = document.getElementById("spinner-audio");
+          const fd = new FormData(form);
+          const prompt = (fd.get("prompt") || "").toString().trim();
+          const file = fd.get("audio");
+          if (!prompt) return alert("Isi prompt dulu.");
+          if (!file || !file.size) return alert("Pilih file audio.");
+          appendLog("user", `[AUDIO]\n${prompt}\n(file: ${file.name})`);
+
+          spinner.classList.remove("hidden");
+          try {
+            const res = await fetch(`${API_BASE}/generate-from-audio`, {
+              method: "POST",
+              body: fd,
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.message || "Request failed");
+            appendLog("assistant", data.result || "[no result]");
+          } catch (err) {
+            appendLog("assistant", "❌ " + (err.message || err));
+          } finally {
+            spinner.classList.add("hidden");
+            form.reset();
+          }
+        });
+    </script>
+  </body>
+</html>
