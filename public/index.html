@@ -1,12 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gemini Flash Tester</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gemini Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      @keyframes gradient {
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      * {
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #1e1b4b 50%,
+          #312e81 100%
+        );
+        background-attachment: fixed;
+      }
+
+      /* Animated gradient background */
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #f093fb 100%
+        );
+        background-size: 200% 200%;
+        animation: gradientShift 8s ease infinite;
+      }
+
+      @keyframes gradientShift {
         0% {
           background-position: 0% 50%;
         }
@@ -17,10 +45,51 @@
           background-position: 0% 50%;
         }
       }
-      .animate-gradient {
-        background-size: 200% 200%;
-        animation: gradient 8s ease infinite;
+
+      /* Glassmorphism effect */
+      .glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
+
+      .glass-strong {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      /* Neon glow effect */
+      .neon-glow {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5),
+          0 0 40px rgba(139, 92, 246, 0.3), 0 0 60px rgba(139, 92, 246, 0.1);
+      }
+
+      .neon-text {
+        text-shadow: 0 0 10px rgba(167, 139, 250, 0.8),
+          0 0 20px rgba(167, 139, 250, 0.5);
+      }
+
+      /* Scrollbar styling */
+      #chat {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(139, 92, 246, 0.5) transparent;
+      }
+
+      #chat::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #chat::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      #chat::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #8b5cf6, #6366f1);
+        border-radius: 10px;
+      }
+
+      /* Floating animation */
       @keyframes float {
         0%,
         100% {
@@ -30,66 +99,227 @@
           transform: translateY(-10px);
         }
       }
-      .animate-float {
+
+      .float-animation {
         animation: float 3s ease-in-out infinite;
       }
-      .glassmorphism {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-      }
-      .spinner {
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #3b82f6;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
+
+      /* Pulse animation */
+      @keyframes pulse-ring {
         0% {
-          transform: rotate(0deg);
+          transform: scale(0.8);
+          opacity: 1;
         }
         100% {
-          transform: rotate(360deg);
+          transform: scale(1.5);
+          opacity: 0;
         }
+      }
+
+      .pulse-ring {
+        animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      /* Shimmer effect */
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      .shimmer {
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        background-size: 1000px 100%;
+        animation: shimmer 3s infinite;
+      }
+
+      /* Button hover effects */
+      .btn-hover {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .btn-hover::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .btn-hover:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+
+      /* Message bubble animations */
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message-bubble {
+        animation: slideIn 0.4s ease-out;
+      }
+
+      /* Typing indicator */
+      @keyframes typing {
+        0%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .typing-dot {
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      /* Particle background */
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .particle {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: rgba(167, 139, 250, 0.5);
+        border-radius: 50%;
+        animation: particleFloat 20s infinite;
+      }
+
+      @keyframes particleFloat {
+        0% {
+          transform: translateY(100vh) translateX(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) translateX(100px);
+          opacity: 0;
+        }
+      }
+
+      /* Cyber grid effect */
+      .cyber-grid {
+        background-image: linear-gradient(
+            rgba(139, 92, 246, 0.1) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
       }
     </style>
   </head>
-  <body
-    class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen"
-  >
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div
-        class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"
-        style="animation-delay: 2s"
-      ></div>
-      <div
-        class="absolute top-1/2 left-1/2 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"
-        style="animation-delay: 4s"
-      ></div>
-    </div>
+  <body class="h-screen antialiased overflow-hidden">
+    <!-- Particle Background -->
+    <div class="particles" id="particles"></div>
 
-    <div class="relative max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-      <header class="mb-8 sm:mb-12 text-center">
-        <h1
-          class="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3"
-        >
-          Gemini Flash Tester
-        </h1>
+    <div
+      class="flex flex-col h-screen max-w-5xl mx-auto relative z-10 cyber-grid"
+    >
+      <!-- Header -->
+      <header class="px-4 py-4 glass-strong border-b border-white/10">
+        <div class="flex items-center gap-4">
+          <!-- Animated Logo -->
+          <div class="relative">
+            <div
+              class="absolute inset-0 bg-purple-500 rounded-xl blur-xl opacity-50 pulse-ring"
+            ></div>
+            <div class="relative gradient-bg p-2.5 rounded-xl neon-glow">
+              <svg
+                class="w-7 h-7 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M12 2C12.5523 2 13 2.44772 13 3V5.5C13 6.05228 12.5523 6.5 12 6.5C11.4477 6.5 11 6.05228 11 5.5V3C11 2.44772 11.4477 2 12 2ZM18.5 5C18.5 4.44772 18.9477 4 19.5 4C20.0523 4 20.5 4.44772 20.5 5V6C20.5 6.55228 20.0523 7 19.5 7C18.9477 7 18.5 6.55228 18.5 6V5ZM4.5 5C4.5 4.44772 4.94772 4 5.5 4C6.05228 4 6.5 4.44772 6.5 5V6C6.5 6.55228 6.05228 7 5.5 7C4.94772 7 4.5 6.55228 4.5 6V5ZM12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8ZM6.24264 15.364C5.85212 14.9734 5.21895 14.9734 4.82843 15.364C4.4379 15.7545 4.4379 16.3877 4.82843 16.7782L5.93934 17.8891C6.32986 18.2796 6.96303 18.2796 7.35355 17.8891C7.74408 17.4986 7.74408 16.8654 7.35355 16.4749L6.24264 15.364ZM18.0607 17.8891C18.4512 17.4986 18.4512 16.8654 18.0607 16.4749L16.9497 15.364C16.5592 14.9734 15.926 14.9734 15.5355 15.364C15.145 15.7545 15.145 16.3877 15.5355 16.7782L16.6464 17.8891C17.037 18.2796 17.6701 18.2796 18.0607 17.8891ZM12 17.5C11.4477 17.5 11 17.9477 11 18.5V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V18.5C13 17.9477 12.5523 17.5 12 17.5Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <div>
+            <h1 class="text-lg font-bold text-white neon-text">Gemini Flash</h1>
+            <div class="flex items-center gap-2">
+              <div
+                class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"
+              ></div>
+              <p class="text-xs text-purple-200">Online</p>
+            </div>
+          </div>
+
+          <div class="ml-auto glass px-3 py-1.5 rounded-lg">
+            <span class="text-xs text-purple-200">model:</span>
+            <span id="modelName" class="text-xs text-white font-semibold ml-1"
+              >gemini-2.5-flash</span
+            >
+          </div>
+        </div>
       </header>
 
-      <div class="mb-6 flex flex-wrap justify-center gap-2 sm:gap-3">
-        <button
-          data-tab="text"
-          class="tab-btn group relative px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+      <!-- Chat Area -->
+      <main
+        id="chat"
+        class="flex-1 overflow-y-auto px-3 sm:px-4 py-6 space-y-4"
+      >
+        <div
+          id="placeholder"
+          class="mx-auto max-w-2xl text-center text-purple-200 text-sm pt-20 float-animation"
         >
-          <span class="relative z-10 flex items-center gap-2">
+          <div class="relative inline-block">
+            <div
+              class="absolute inset-0 bg-purple-500 rounded-full blur-2xl opacity-30"
+            ></div>
             <svg
-              class="w-5 h-5"
+              class="w-16 h-16 mx-auto text-purple-300 relative z-10"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -97,223 +327,34 @@
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                stroke-width="2"
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              ></path>
+                stroke-width="1.5"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
             </svg>
-            Text
-          </span>
-        </button>
-        <button
-          data-tab="image"
-          class="tab-btn group relative px-6 py-3 rounded-2xl bg-white text-slate-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-        >
-          <span class="relative z-10 flex items-center gap-2">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              ></path>
-            </svg>
-            Image
-          </span>
-        </button>
-        <button
-          data-tab="document"
-          class="tab-btn group relative px-6 py-3 rounded-2xl bg-white text-slate-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-        >
-          <span class="relative z-10 flex items-center gap-2">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              ></path>
-            </svg>
-            Document
-          </span>
-        </button>
-        <button
-          data-tab="audio"
-          class="tab-btn group relative px-6 py-3 rounded-2xl bg-white text-slate-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-        >
-          <span class="relative z-10 flex items-center gap-2">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-              ></path>
-            </svg>
-            Audio
-          </span>
-        </button>
-      </div>
-
-      <main class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-        <section class="space-y-6">
-          <div
-            id="panel-text"
-            class="panel glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
-          >
-            <div class="flex items-center gap-3 mb-6">
-              <div
-                class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  ></path>
-                </svg>
-              </div>
-              <div>
-                <h2 class="font-bold text-xl text-slate-800">
-                  Text Generation
-                </h2>
-                <p class="text-sm text-slate-500">POST /generate-text</p>
-              </div>
-            </div>
-            <form id="form-text" class="space-y-4">
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Your Prompt</label
-                >
-                <textarea
-                  name="prompt"
-                  rows="5"
-                  placeholder="Type your prompt here..."
-                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
-                ></textarea>
-              </div>
-              <div class="flex items-center gap-3">
-                <button
-                  type="submit"
-                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Send Message
-                </button>
-                <span
-                  id="spinner-text"
-                  class="hidden flex items-center gap-2 text-sm text-slate-600"
-                >
-                  <div class="spinner"></div>
-                  <span>Processing...</span>
-                </span>
-              </div>
-            </form>
           </div>
+          <p class="mt-4 text-base font-light">
+            Mulai percakapan futuristik Anda di bawah ini
+          </p>
+          <p class="mt-2 text-xs text-purple-300">
+            Kirim teks, gambar, dokumen, atau audio 🎤
+          </p>
+        </div>
+      </main>
 
-          <div
-            id="panel-image"
-            class="panel hidden glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
-          >
-            <div class="flex items-center gap-3 mb-6">
-              <div
-                class="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg"
+      <!-- Footer -->
+      <footer class="glass-strong border-t border-white/10 p-3 sm:p-4">
+        <div class="mx-auto max-w-3xl">
+          <form id="composer" class="flex items-end gap-2">
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-1">
+              <button
+                type="button"
+                id="btnDoc"
+                title="Upload document"
+                class="btn-hover p-2.5 rounded-xl glass hover:glass-strong text-purple-200 hover:text-white transition-all relative z-10"
               >
                 <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  ></path>
-                </svg>
-              </div>
-              <div>
-                <h2 class="font-bold text-xl text-slate-800">Image Vision</h2>
-                <p class="text-sm text-slate-500">POST /generate-image</p>
-              </div>
-            </div>
-            <form
-              id="form-image"
-              class="space-y-4"
-              enctype="multipart/form-data"
-            >
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Prompt</label
-                >
-                <input
-                  type="text"
-                  name="prompt"
-                  placeholder="Describe what you want to analyze from the image"
-                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Upload Image</label
-                >
-                <div class="relative">
-                  <input
-                    type="file"
-                    name="image"
-                    accept="image/*"
-                    class="block w-full text-sm text-slate-700 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-purple-500 file:to-purple-600 file:text-white hover:file:from-purple-600 hover:file:to-purple-700 file:cursor-pointer file:transition-all file:duration-300"
-                  />
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <button
-                  type="submit"
-                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold hover:from-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Analyze Image
-                </button>
-                <span
-                  id="spinner-image"
-                  class="hidden flex items-center gap-2 text-sm text-slate-600"
-                >
-                  <div class="spinner"></div>
-                  <span>Processing...</span>
-                </span>
-              </div>
-            </form>
-          </div>
-
-          <div
-            id="panel-document"
-            class="panel hidden glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
-          >
-            <div class="flex items-center gap-3 mb-6">
-              <div
-                class="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl shadow-lg"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
+                  class="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -323,73 +364,18 @@
                     stroke-linejoin="round"
                     stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  ></path>
+                  />
                 </svg>
-              </div>
-              <div>
-                <h2 class="font-bold text-xl text-slate-800">
-                  Document Analysis
-                </h2>
-                <p class="text-sm text-slate-500">
-                  POST /generate-from-document
-                </p>
-              </div>
-            </div>
-            <form
-              id="form-document"
-              class="space-y-4"
-              enctype="multipart/form-data"
-            >
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Prompt</label
-                >
-                <input
-                  type="text"
-                  name="prompt"
-                  placeholder="Questions or instructions about the document"
-                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Upload Document</label
-                >
-                <input
-                  type="file"
-                  name="document"
-                  accept="application/pdf,.txt,.md,.doc,.docx"
-                  class="block w-full text-sm text-slate-700 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-indigo-500 file:to-indigo-600 file:text-white hover:file:from-indigo-600 hover:file:to-indigo-700 file:cursor-pointer file:transition-all file:duration-300"
-                />
-              </div>
-              <div class="flex items-center gap-3">
-                <button
-                  type="submit"
-                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold hover:from-indigo-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Process Document
-                </button>
-                <span
-                  id="spinner-document"
-                  class="hidden flex items-center gap-2 text-sm text-slate-600"
-                >
-                  <div class="spinner"></div>
-                  <span>Processing...</span>
-                </span>
-              </div>
-            </form>
-          </div>
+              </button>
 
-          <div
-            id="panel-audio"
-            class="panel hidden glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 transform transition-all duration-500"
-          >
-            <div class="flex items-center gap-3 mb-6">
-              <div
-                class="p-3 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-lg"
+              <button
+                type="button"
+                id="btnImage"
+                title="Upload image"
+                class="btn-hover p-2.5 rounded-xl glass hover:glass-strong text-purple-200 hover:text-white transition-all relative z-10"
               >
                 <svg
-                  class="w-6 h-6 text-white"
+                  class="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -398,275 +384,295 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                  ></path>
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
-              </div>
-              <div>
-                <h2 class="font-bold text-xl text-slate-800">
-                  Audio Processing
-                </h2>
-                <p class="text-sm text-slate-500">POST /generate-from-audio</p>
-              </div>
-            </div>
-            <form
-              id="form-audio"
-              class="space-y-4"
-              enctype="multipart/form-data"
-            >
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Prompt</label
-                >
-                <input
-                  type="text"
-                  name="prompt"
-                  placeholder="Instructions or questions about the audio"
-                  class="w-full rounded-2xl border-2 border-slate-200 p-4 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Upload Audio</label
-                >
-                <input
-                  type="file"
-                  name="audio"
-                  accept="audio/*"
-                  class="block w-full text-sm text-slate-700 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-pink-500 file:to-pink-600 file:text-white hover:file:from-pink-600 hover:file:to-pink-700 file:cursor-pointer file:transition-all file:duration-300"
-                />
-              </div>
-              <div class="flex items-center gap-3">
-                <button
-                  type="submit"
-                  class="flex-1 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-pink-600 text-white font-semibold hover:from-pink-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Process Audio
-                </button>
-                <span
-                  id="spinner-audio"
-                  class="hidden flex items-center gap-2 text-sm text-slate-600"
-                >
-                  <div class="spinner"></div>
-                  <span>Processing...</span>
-                </span>
-              </div>
-            </form>
-          </div>
-        </section>
+              </button>
 
-        <aside
-          class="glassmorphism rounded-3xl shadow-xl p-6 sm:p-8 flex flex-col h-[600px] lg:h-auto"
-        >
-          <div class="flex items-center gap-3 mb-6">
-            <div
-              class="p-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl"
-            >
-              <svg
-                class="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              <button
+                type="button"
+                id="btnMic"
+                title="Record audio"
+                class="btn-hover p-2.5 rounded-xl glass hover:glass-strong text-purple-200 hover:text-white transition-all relative z-10"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                ></path>
-              </svg>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm0 0v4m0 0H9m3 0h3m4-7a7 7 0 01-14 0"
+                  />
+                </svg>
+              </button>
             </div>
-            <h2 class="font-bold text-xl text-slate-800">Conversation</h2>
-          </div>
-          <div
-            id="log"
-            class="flex-1 overflow-y-auto space-y-3 p-4 bg-white/50 rounded-2xl border-2 border-slate-200/50 backdrop-blur-sm"
-          ></div>
-        </aside>
-      </main>
 
-      <footer class="mt-12 text-center text-sm text-slate-500">
-        <p>Built with ❤️ using Tailwind CSS and Gemini AI</p>
+            <!-- Input Area -->
+            <div class="flex-1 relative">
+              <textarea
+                id="prompt"
+                rows="1"
+                placeholder="Ketik pesan Anda..."
+                class="w-full max-h-40 min-h-[48px] rounded-xl glass-strong border-0 px-4 py-3 pr-12 focus:ring-2 focus:ring-purple-500 focus:outline-none resize-none placeholder-purple-300 text-white transition-all"
+              ></textarea>
+              <button
+                type="submit"
+                class="absolute right-2 bottom-2 p-2 rounded-lg gradient-bg text-white sm:hidden neon-glow btn-hover"
+                title="Send"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Send Button -->
+            <button
+              type="submit"
+              class="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-xl gradient-bg text-white font-medium neon-glow transition-all hover:scale-105 btn-hover relative z-10"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
+                />
+              </svg>
+              Kirim
+            </button>
+
+            <input
+              id="fileDoc"
+              type="file"
+              accept="application/pdf,.txt,.md,.doc,.docx"
+              class="hidden"
+            />
+            <input id="fileImage" type="file" accept="image/*" class="hidden" />
+          </form>
+
+          <!-- Status Chips -->
+          <div
+            id="recChip"
+            class="hidden mt-2 text-xs text-rose-200 glass-strong border border-rose-400/30 px-3 py-2 rounded-lg w-fit"
+          >
+            <span class="inline-flex items-center gap-2">
+              <span
+                class="w-2 h-2 bg-rose-400 rounded-full animate-pulse"
+              ></span>
+              Recording... klik mic untuk stop
+            </span>
+          </div>
+
+          <div
+            id="attachChip"
+            class="hidden mt-2 text-xs text-purple-200 glass-strong border border-purple-400/30 px-3 py-2 rounded-lg w-fit"
+          ></div>
+        </div>
       </footer>
     </div>
 
     <script>
-      const tabs = document.querySelectorAll(".tab-btn");
-      const panels = {
-        text: document.getElementById("panel-text"),
-        image: document.getElementById("panel-image"),
-        document: document.getElementById("panel-document"),
-        audio: document.getElementById("panel-audio"),
-      };
-
-      tabs.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const target = btn.getAttribute("data-tab");
-          tabs.forEach((b) => {
-            b.classList.remove(
-              "bg-gradient-to-r",
-              "from-blue-500",
-              "to-blue-600",
-              "text-white"
-            );
-            b.classList.add("bg-white", "text-slate-700");
-          });
-          btn.classList.remove("bg-white", "text-slate-700");
-          btn.classList.add(
-            "bg-gradient-to-r",
-            "from-blue-500",
-            "to-blue-600",
-            "text-white"
-          );
-          Object.values(panels).forEach((p) => p.classList.add("hidden"));
-          panels[target].classList.remove("hidden");
-        });
-      });
-
-      const logEl = document.getElementById("log");
-      const API_BASE = window.location.origin;
-
-      function appendLog(role, text) {
-        const wrap = document.createElement("div");
-        wrap.className =
-          "p-4 rounded-2xl transform transition-all duration-300 hover:scale-[1.02] " +
-          (role === "user"
-            ? "bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 shadow-sm"
-            : "bg-gradient-to-r from-emerald-50 to-emerald-100 border-2 border-emerald-200 shadow-sm");
-        const who = document.createElement("div");
-        who.className =
-          "flex items-center gap-2 text-xs font-bold text-slate-700 mb-2";
-        const icon = document.createElement("span");
-        icon.textContent = role === "user" ? "👤" : "🤖";
-        const name = document.createElement("span");
-        name.textContent = role === "user" ? "You" : "Gemini";
-        who.appendChild(icon);
-        who.appendChild(name);
-        const pre = document.createElement("pre");
-        pre.className =
-          "whitespace-pre-wrap text-sm text-slate-800 leading-relaxed";
-        pre.textContent = text || "";
-        wrap.appendChild(who);
-        wrap.appendChild(pre);
-        logEl.appendChild(wrap);
-        logEl.scrollTop = logEl.scrollHeight;
+      // Create floating particles
+      const particlesContainer = document.getElementById("particles");
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.className = "particle";
+        particle.style.left = Math.random() * 100 + "%";
+        particle.style.animationDelay = Math.random() * 20 + "s";
+        particle.style.animationDuration = Math.random() * 10 + 15 + "s";
+        particlesContainer.appendChild(particle);
       }
 
-      document
-        .getElementById("form-text")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const form = e.currentTarget;
-          const spinner = document.getElementById("spinner-text");
-          const prompt = form.prompt.value.trim();
-          if (!prompt) return;
-          appendLog("user", prompt);
+      const placeholder = document.getElementById("placeholder");
+      const API_BASE = window.location.origin;
+      const chatEl = document.getElementById("chat");
+      const modelNameEl = document.getElementById("modelName");
 
-          spinner.classList.remove("hidden");
-          try {
-            const res = await fetch(`${API_BASE}/generate-text`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ prompt }),
+      // Auto-size textarea
+      const ta = document.getElementById("prompt");
+      ta.addEventListener("input", () => {
+        ta.style.height = "auto";
+        ta.style.height = Math.min(160, ta.scrollHeight) + "px";
+      });
+
+      // Enhanced bubble function
+      function bubble(role, text) {
+        if (placeholder) placeholder.classList.add("hidden");
+
+        const wrap = document.createElement("div");
+        wrap.className =
+          "w-full flex " +
+          (role === "user" ? "justify-end" : "justify-start") +
+          " message-bubble";
+
+        const b = document.createElement("div");
+        b.className =
+          "max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm " +
+          (role === "user"
+            ? "rounded-br-md gradient-bg text-white neon-glow"
+            : "rounded-bl-md glass-strong text-white border border-white/20");
+
+        // Markdown processing
+        let processedText = text.replace(
+          /\*\*(.*?)\*\*/g,
+          "<strong class='font-semibold'>$1</strong>"
+        );
+        processedText = processedText.replace(
+          /\`(.*?)\`/g,
+          "<code class='glass px-2 py-1 rounded text-xs font-mono text-purple-200'>$1</code>"
+        );
+        processedText = processedText.replace(/\n/g, "<br>");
+
+        b.innerHTML = processedText;
+        wrap.appendChild(b);
+        chatEl.appendChild(wrap);
+        chatEl.scrollTop = chatEl.scrollHeight;
+      }
+
+      // Health check
+      fetch(API_BASE + "/health")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d?.model) modelNameEl.textContent = d.model;
+        })
+        .catch(() => {});
+
+      // File handling
+      const fileDoc = document.getElementById("fileDoc");
+      const fileImage = document.getElementById("fileImage");
+      const btnDoc = document.getElementById("btnDoc");
+      const btnImage = document.getElementById("btnImage");
+      const btnMic = document.getElementById("btnMic");
+      const recChip = document.getElementById("recChip");
+      const attachChip = document.getElementById("attachChip");
+      let recorder,
+        chunks = [],
+        recording = false;
+
+      btnDoc.onclick = () => fileDoc.click();
+      btnImage.onclick = () => fileImage.click();
+
+      fileDoc.onchange = () => {
+        if (!fileDoc.files.length) return;
+        const f = fileDoc.files[0];
+        attachChip.textContent = `📄 Dokumen siap: ${f.name}`;
+        attachChip.classList.remove("hidden");
+      };
+
+      fileImage.onchange = () => {
+        if (!fileImage.files.length) return;
+        const f = fileImage.files[0];
+        attachChip.textContent = `🖼️ Gambar siap: ${f.name}`;
+        attachChip.classList.remove("hidden");
+      };
+
+      // Mic recording
+      btnMic.onclick = async () => {
+        try {
+          if (!recording) {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: true,
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data?.message || "Request failed");
-            appendLog("assistant", data.result || "[no result]");
-          } catch (err) {
-            appendLog("assistant", "❌ " + (err.message || err));
-          } finally {
-            spinner.classList.add("hidden");
-            form.reset();
+            recorder = new MediaRecorder(stream);
+            chunks = [];
+            recorder.ondataavailable = (e) => {
+              if (e.data.size) chunks.push(e.data);
+            };
+            recorder.onstop = () => {
+              stream.getTracks().forEach((t) => t.stop());
+              attachChip.textContent = "🎤 Audio siap dari mic";
+              attachChip.classList.remove("hidden");
+            };
+            recorder.start();
+            recording = true;
+            recChip.classList.remove("hidden");
+          } else {
+            recorder.stop();
+            recording = false;
+            recChip.classList.add("hidden");
           }
-        });
+        } catch (e) {
+          alert("Mic tidak tersedia / izin ditolak");
+        }
+      };
 
+      // Submit handler
       document
-        .getElementById("form-image")
+        .getElementById("composer")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-          const form = e.currentTarget;
-          const spinner = document.getElementById("spinner-image");
-          const fd = new FormData(form);
-          const prompt = (fd.get("prompt") || "").toString().trim();
-          const file = fd.get("image");
-          if (!prompt) return alert("Isi prompt dulu.");
-          if (!file || !file.size) return alert("Pilih file image.");
-          appendLog("user", `[VISION]\n${prompt}\n(file: ${file.name})`);
+          const text = ta.value.trim();
+          const hasDoc = fileDoc.files.length > 0;
+          const hasImg = fileImage.files.length > 0;
+          const hasMicBlob = chunks.length > 0;
 
-          spinner.classList.remove("hidden");
+          if (!text && !hasDoc && !hasImg && !hasMicBlob) return;
+
+          const summary = [
+            text,
+            hasImg ? "[+image]" : "",
+            hasDoc ? "[+doc]" : "",
+            hasMicBlob ? "[+audio]" : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          bubble("user", summary || "[attachment only]");
+
           try {
-            const res = await fetch(`${API_BASE}/generate-image`, {
-              method: "POST",
-              body: fd,
-            });
-            const data = await res.json();
+            let res, data;
+            if (hasImg) {
+              const fd = new FormData();
+              if (text) fd.append("prompt", text);
+              fd.append("image", fileImage.files[0]);
+              res = await fetch(API_BASE + "/generate-image", {
+                method: "POST",
+                body: fd,
+              });
+              data = await res.json();
+            } else if (hasDoc) {
+              const fd = new FormData();
+              if (text) fd.append("prompt", text);
+              fd.append("document", fileDoc.files[0]);
+              res = await fetch(API_BASE + "/generate-from-document", {
+                method: "POST",
+                body: fd,
+              });
+              data = await res.json();
+            } else if (hasMicBlob) {
+              const fd = new FormData();
+              if (text) fd.append("prompt", text);
+              const blob = new Blob(chunks, { type: "audio/webm" });
+              fd.append("audio", blob, "recording.webm");
+              chunks = [];
+              res = await fetch(API_BASE + "/generate-from-audio", {
+                method: "POST",
+                body: fd,
+              });
+              data = await res.json();
+            } else {
+              res = await fetch(API_BASE + "/generate-text", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: text }),
+              });
+              data = await res.json();
+            }
+
             if (!res.ok) throw new Error(data?.message || "Request failed");
-            appendLog("assistant", data.result || "[no result]");
+            bubble("assistant", data.result || "[no result]");
           } catch (err) {
-            appendLog("assistant", "❌ " + (err.message || err));
+            bubble("assistant", "❌ " + (err.message || err));
           } finally {
-            spinner.classList.add("hidden");
-            form.reset();
-          }
-        });
-
-      document
-        .getElementById("form-document")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const form = e.currentTarget;
-          const spinner = document.getElementById("spinner-document");
-          const fd = new FormData(form);
-          const prompt = (fd.get("prompt") || "").toString().trim();
-          const file = fd.get("document");
-          if (!prompt) return alert("Isi prompt dulu.");
-          if (!file || !file.size) return alert("Pilih dokumen.");
-          appendLog("user", `[DOCUMENT]\n${prompt}\n(file: ${file.name})`);
-
-          spinner.classList.remove("hidden");
-          try {
-            const res = await fetch(`${API_BASE}/generate-from-document`, {
-              method: "POST",
-              body: fd,
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data?.message || "Request failed");
-            appendLog("assistant", data.result || "[no result]");
-          } catch (err) {
-            appendLog("assistant", "❌ " + (err.message || err));
-          } finally {
-            spinner.classList.add("hidden");
-            form.reset();
-          }
-        });
-
-      document
-        .getElementById("form-audio")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const form = e.currentTarget;
-          const spinner = document.getElementById("spinner-audio");
-          const fd = new FormData(form);
-          const prompt = (fd.get("prompt") || "").toString().trim();
-          const file = fd.get("audio");
-          if (!prompt) return alert("Isi prompt dulu.");
-          if (!file || !file.size) return alert("Pilih file audio.");
-          appendLog("user", `[AUDIO]\n${prompt}\n(file: ${file.name})`);
-
-          spinner.classList.remove("hidden");
-          try {
-            const res = await fetch(`${API_BASE}/generate-from-audio`, {
-              method: "POST",
-              body: fd,
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data?.message || "Request failed");
-            appendLog("assistant", data.result || "[no result]");
-          } catch (err) {
-            appendLog("assistant", "❌ " + (err.message || err));
-          } finally {
-            spinner.classList.add("hidden");
-            form.reset();
+            ta.value = "";
+            ta.style.height = "auto";
+            fileDoc.value = "";
+            fileImage.value = "";
+            attachChip.classList.add("hidden");
           }
         });
     </script>
